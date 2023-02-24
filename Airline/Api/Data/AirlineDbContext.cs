@@ -1,4 +1,3 @@
-using System.Reflection;
 using Api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +12,6 @@ public class AirlineDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetCallingAssembly());
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AirlineDbContext).Assembly);
     }
 }

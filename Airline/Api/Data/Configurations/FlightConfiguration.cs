@@ -10,7 +10,6 @@ public class FlightConfiguration : IEntityTypeConfiguration<Flight>
     {
         builder.Property(p => p.Id).IsRequired();
         builder.Property(p => p.Code).IsRequired();
-        builder.Property(p => p.Price).IsRequired();
-        builder.Property(p => p.Price).HasPrecision(18, 2);
+        builder.Property(p => p.Price).IsRequired().HasPrecision(18, 2);
     }
 }
