@@ -13,7 +13,7 @@ services:
   sqlserver:
     image: 'mcr.microsoft.com/azure-sql-edge'
     environment:
-      ACCEPT_EULA: 'Y'
+      ACCEPT_EULA: '1'
       MSSQL_SA_PASSWORD: 'Password12*'
       MSSQL_PID: 'Developer'
     ports:

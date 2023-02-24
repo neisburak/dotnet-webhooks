@@ -36,6 +36,15 @@ public class FlightManager : IFlightService
         return flight?.Adapt<FlightForView>();
     }
 
+    public async Task<FlightForView?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var flight = await _context.Flights.FirstOrDefaultAsync(f => f.Code == code, cancellationToken);
+
+        return flight?.Adapt<FlightForView>();
+    }
+
     public async Task<FlightForView> AddAsync(FlightForUpsert flightForInsert, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -62,7 +71,11 @@ public class FlightManager : IFlightService
         if (flight is null) throw new Exception($"Flight with id '{id}' doesn't found.");
 
         var oldPrice = flight.Price;
-        flight = flightForUpdate.Adapt<Flight>();
+        
+        flight.Code = flightForUpdate.Code;
+        flight.Price = flightForUpdate.Price;
+
+        _context.Update(flight);
         var result = await _context.SaveChangesAsync() > 0;
 
         if (oldPrice != flight.Price)

@@ -33,6 +33,15 @@ public class WebhookSubscriptionManager : IWebhookSubscriptionService
         return subscription?.Adapt<WebhookSubscriptionForView>();
     }
 
+    public async Task<WebhookSubscriptionForView?> GetByPublisherAsync(string publisher, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var subscription = await _context.WebhookSubscriptions.FirstOrDefaultAsync(f => f.WebhookPublisher == publisher, cancellationToken);
+
+        return subscription?.Adapt<WebhookSubscriptionForView>();
+    }
+
     public async Task<WebhookSubscriptionForView> AddAsync(WebhookSubscriptionForUpsert subscriptionForInsert, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -43,9 +52,9 @@ public class WebhookSubscriptionManager : IWebhookSubscriptionService
         }
 
         var subscription = subscriptionForInsert.Adapt<WebhookSubscription>();
-        
+
         subscription.Secret = Guid.NewGuid();
-        subscription.WebhookPublisher = "Airline";
+        subscription.WebhookPublisher = "Airline Company";
 
         await _context.AddAsync(subscription, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
@@ -59,12 +68,10 @@ public class WebhookSubscriptionManager : IWebhookSubscriptionService
 
         var subscription = await _context.WebhookSubscriptions.FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
 
-        if (subscription is null)
-        {
-            throw new Exception($"Subscription with id '{id}' doesn't found.");
-        }
+        if (subscription is null) throw new Exception($"Subscription with id '{id}' doesn't found.");
 
-        subscription = subscriptionForUpdate.Adapt<WebhookSubscription>();
+        subscription.WebhookUri = subscriptionForUpdate.WebhookUri;
+        subscription.WebhookType = subscription.WebhookType;
 
         return await _context.SaveChangesAsync() > 0;
     }

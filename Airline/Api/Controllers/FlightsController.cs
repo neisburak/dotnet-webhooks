@@ -30,6 +30,14 @@ public class FlightsController : ControllerBase
         return flight is null ? NotFound() : Ok(flight);
     }
 
+    [HttpGet("search/{code}")]
+    public async Task<IActionResult> GetByCodeAsync(string code, CancellationToken cancellationToken)
+    {
+        var flight = await _flightService.GetByCodeAsync(code, cancellationToken);
+
+        return flight is null ? NotFound() : Ok(flight);
+    }
+
     [HttpPost]
     public async Task<IActionResult> PostAsync([FromBody] FlightForUpsert flightForInsert, CancellationToken cancellationToken)
     {
@@ -37,7 +45,7 @@ public class FlightsController : ControllerBase
         {
             var result = await _flightService.AddAsync(flightForInsert, cancellationToken);
 
-            return CreatedAtRoute("GetAsync", new { Code = result.Code }, result);
+            return CreatedAtAction(nameof(GetByCodeAsync), new { Code = result.Code }, result);
         }
         catch (Exception ex)
         {

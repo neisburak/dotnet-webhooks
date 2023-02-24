@@ -30,6 +30,14 @@ public class WebhookSubscriptionsController : ControllerBase
         return subscription is null ? NotFound() : Ok(subscription);
     }
 
+    [HttpGet("search/{publisher}")]
+    public async Task<IActionResult> GetByPublisherAsync(string publisher, CancellationToken cancellationToken)
+    {
+        var subscription = await _subscriptionService.GetByPublisherAsync(publisher, cancellationToken);
+
+        return subscription is null ? NotFound() : Ok(subscription);
+    }
+
     [HttpPost]
     public async Task<IActionResult> PostAsync([FromBody] WebhookSubscriptionForUpsert subscriptionForInsert, CancellationToken cancellationToken)
     {
@@ -37,7 +45,7 @@ public class WebhookSubscriptionsController : ControllerBase
         {
             var result = await _subscriptionService.AddAsync(subscriptionForInsert, cancellationToken);
 
-            return CreatedAtRoute("GetAsync", new { Secret = result.Secret }, result);
+            return CreatedAtAction(nameof(GetByPublisherAsync), new { Publisher = result.WebhookPublisher }, result);
         }
         catch (Exception ex)
         {
