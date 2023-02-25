@@ -51,20 +51,20 @@ public class AppHost : IAppHost
             var message = GetMessage(args.Body.ToArray());
             if (message is null) return;
 
-            var webhookToSend = new ChangePayload
+            foreach (var whs in _context.WebhookSubscriptions.Where(w => w.WebhookType == message.WebhookType))
             {
-                WebhookType = message.WebhookType,
-                NewPrice = message.NewPrice,
-                FlightCode = message.FlightCode,
-            };
+                var webhookToSend = new ChangePayload
+                {
+                    NewPrice = message.NewPrice,
+                    FlightCode = message.FlightCode,
+                };
 
-            foreach (var whs in _context.WebhookSubscriptions.Where(w => w.WebhookType == webhookToSend.WebhookType))
-            {
-                webhookToSend.WebhookUri = whs.WebhookUri;
-                webhookToSend.Secret = whs.Secret;
-                webhookToSend.Publisher = whs.WebhookPublisher;
-
-                await _client.SendAsync(webhookToSend);
+                await _client.SendAsync(whs.WebhookUri, webhookToSend, new Dictionary<string, string>
+                {
+                    { "Secret", whs.Secret.ToString() },
+                    { "Publisher", whs.WebhookPublisher },
+                    { "Event-Type", message.WebhookType.ToString() },
+                });
             }
         };
 

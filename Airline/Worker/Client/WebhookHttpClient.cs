@@ -15,12 +15,14 @@ public class WebhookHttpClient : IWebhookClient
         _logger = logger;
     }
 
-    public async Task SendAsync(ChangePayload payload)
+    public async Task SendAsync(string uri, ChangePayload payload, IDictionary<string, string> headers)
     {
         var httpClient = _httpClientFactory.CreateClient();
 
-        var request = new HttpRequestMessage(HttpMethod.Post, payload.WebhookUri);
+        var request = new HttpRequestMessage(HttpMethod.Post, uri);
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        foreach (var header in headers) request.Headers.Add(header.Key, header.Value);
 
         var content = JsonSerializer.Serialize(payload);
         request.Content = new StringContent(content);

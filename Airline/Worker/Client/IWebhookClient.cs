@@ -4,5 +4,5 @@ namespace Worker.Client;
 
 public interface IWebhookClient
 {
-    Task SendAsync(ChangePayload payload);
+    Task SendAsync(string uri, ChangePayload payload, IDictionary<string, string> headers);
 }
