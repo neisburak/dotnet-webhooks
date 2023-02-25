@@ -9,4 +9,9 @@ public class TravelAgentDbContext : DbContext
 
     public DbSet<Flight> Flights => Set<Flight>();
     public DbSet<WebhookSecret> SubscriptionSecrets => Set<WebhookSecret>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(TravelAgentDbContext).Assembly);
+    }
 }

@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Worker.Client;
@@ -70,7 +71,7 @@ public class AppHost : IAppHost
 
         channel.BasicConsume(queue: queueName, autoAck: true, consumer: consumer);
 
-        Console.ReadKey();
+        Console.Read();
     }
 
     private NotificationMessage? GetMessage(byte[] bytes)
